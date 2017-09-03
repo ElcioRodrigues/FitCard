@@ -1,0 +1,184 @@
+﻿<script>
+
+    var _Empresa = function () {
+        var o = this;
+
+        o.init = function () {
+            $('#RazaoSocial').limit('150');
+            $('#NomeFantasia').limit('150');
+            $('#Email').limit('70');
+            $('#Endereco').limit('150');
+            $('#Cidade').limit('100');
+            $('#Estado').limit('50');
+
+            $('#DataCadastro').datepicker({ dateFormat: "dd/mm/yy", onSelect: function () { this.focus(); } });
+            $('#DataCadastro').click(function () { $(this).datepicker('show'); });
+
+            var maskBehavior = function (val) {
+                return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+            },
+            options = {
+                onKeyPress: function (val, e, field, options) {
+                    field.mask(maskBehavior.apply({}, arguments), options);
+                }
+            };
+            $('#Telefone').mask(maskBehavior, options);
+            $("#Cnpj").mask("99.999.999/9999-99");
+
+        };
+
+        o.excluir = function (btn) {
+            var callback = function () {
+                $.ajax({
+                    url: '@Url.Action("Excluir")',
+                    data: JSON.stringify({ id: $(btn).closest('tr').attr('data-id') }),
+                    contentType: 'application/json; charset=utf-8',
+                    type: "POST",
+                    cache: false,
+                    beforeSend: function () {
+                        $_Util.modalAguarde();
+                    },
+                    success: function (data) {
+                        if (data.sucesso) {
+                            o.voltarIndex();
+                        }
+                        else {
+                            $.fn.modalErro(data.msg);
+                        }
+                    },
+                    error: function () {
+                    }
+                }).always(function () {
+                    $_Util.removerModalAguarde();
+                });
+            };
+            $.fn.modalConfirmacao('Excluir', 'Você selecionou a opção de excluir, se confirmada esta operação não poderá ser desfeita. Deseja continuar?', callback);
+        };
+
+        o.IniciarFormCadastro = function (id) {
+            o.limparCadastro();
+            if (id == 0) {
+                $('#btnSalvar').val('Salvar');
+                if (!$('#divCadastro').is(':visible'))
+                    SlideToggle('divCadastro');
+
+                $('#divConfigs').hide();
+                o.init();
+                $('#Id').val('0');
+            }
+            else {
+
+                $.ajax({
+                    url: '@Url.Action("Buscar")',
+                    data: JSON.stringify({ id: id }),
+                    contentType: 'application/json; charset=utf-8',
+                    type: "POST",
+                    cache: false,
+                    beforeSend: function () {
+                        $_Util.modalAguarde();
+                    },
+                    success: function (result) {
+                        if (!$('#divCadastro').is(':visible'))
+                            SlideToggle('divCadastro');
+
+                        $('#divConfigs').hide();
+                        $("#divCadastro").html(result.PartialViewHtml);
+                        $('#btnSalvar').val('Alterar');
+                        o.init();
+                    },
+                    error: function (e) {
+                        $.fn.modalErro(e.Message);
+                    }
+                }).always(function () {
+                    $_Util.removerModalAguarde();
+                });
+            }
+        };
+
+        o.limparCadastro = function () {
+            $('#frmCadastro').limparForm();
+        };
+
+        o.salvarCadastro = function () {
+            var valido = $('#frmCadastro').formValido();
+            if (valido) {
+                $('#frmCadastro').submit();
+            }
+        };
+
+        o.cancelarCadastro = function () {
+            if (!$('#divConfigs').is(':visible'))
+                SlideToggle('divConfigs');
+            $('#divCadastro').hide();
+        };
+
+        o.sucessoCadastro = function (data) {
+            $_Util.removerModalAguarde();
+            if (data.sucesso) {
+                $.fn.modalSucesso(data.msg, function () {
+                    $_Empresa.voltarIndex();
+                })
+            } else {
+                $.fn.modalErro(data.msg);
+            }
+        };
+
+        o.changeCategoria = function (input) {
+            $('#Telefone').removeClass('obg');
+            if ($(input).val() == '@((int)Modelo.Enumerados.Categoria.Supermercado)')
+                $('#Telefone').addClass('obg');
+        };
+
+        o.limparPesquisa = function () {
+            $.ajax({
+                url: '@Url.Action("RemoverCookie")',
+                data: JSON.stringify({}),
+                contentType: 'application/json; charset=utf-8',
+                type: "POST",
+                cache: false,
+                success: function (data) {
+                    o.voltarIndex();
+                },
+                error: function () { }
+            });
+        }
+
+        o.pesquisar = function () {
+            var valido = $('#frmPesquisa').formValido();
+            if (valido) {
+                $('#frmPesquisa').submit();
+            }
+        };
+
+        o.sucessoPesquisa = function (data) {
+            $_Util.removerModalAguarde();
+            if (data.sucesso) {
+                $('#divLista').html(data.PartialViewHtml);
+                $('html, body').animate({
+                    scrollTop: $('#divLista').offset().top
+                }, 2000);
+            } else {
+                $.fn.modalErro(data.msg);
+            }
+        };
+
+        o.sucessoPaginacao = function (data) {
+            $('#divLista').html(data.PartialViewHtml);
+        };
+
+        o.voltarIndex = function () {
+            $_Util.redirecionar('@Url.Action("Index", "Empresa")');
+        };
+
+    };
+
+    $.extend(_Empresa.prototype, {
+    });
+
+    var $_Empresa = new _Empresa();
+
+    $(function () {
+        $("#fCnpj").mask("99.999.999/9999-99");
+    });
+
+</script>

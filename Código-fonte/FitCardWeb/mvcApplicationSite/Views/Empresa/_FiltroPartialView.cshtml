@@ -1,0 +1,40 @@
+﻿@model Modelo.EmpresaFiltro
+
+@using (Ajax.BeginForm("BuscarPorFiltro", "Empresa", null, new AjaxOptions
+{
+    HttpMethod = "Post",
+    OnFailure = "$_Util.removerModalAguarde()",
+    OnSuccess = "$_Empresa.sucessoPesquisa(data)",
+    OnBegin = "$_Util.modalAguarde()"
+}, new { id = "frmPesquisa" }))
+{
+    <h3>Filtro</h3>
+    <div class="row">
+        <div class="col-md-3">
+            @Html.Label("lblRazaoSocial", "Razão Social", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.fRazaoSocial, new { @class = "form-control" })
+        </div>
+        <div class="col-md-3">
+            @Html.Label("lblNomeFantasia", "Nome Fantasia", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.fNomeFantasia, new { @class = "form-control" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblCnpj", "Cnpj", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.fCnpj, new { @class = "form-control" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblCategoria", "Categoria", new { @class = "form-control-label" })
+            @Html.EnumDropDownListFor(m => m.fCategoria, "Selecione", new { @class = "form-control" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblStatus", "Status", new { @class = "form-control-label" })
+            @Html.EnumDropDownListFor(m => m.fStatus, "Selecione", new { @class = "form-control" })
+        </div>
+    </div>
+   
+}
+<div class="row" style="margin-top: 10px;">
+    <a href="javascript:void(0)" style="float: right; margin-left: 5px;" class="btn btn-success" onclick="$_Empresa.pesquisar()">Pesquisar</a>
+    <a style="float: right; margin-left: 5px;" class="btn btn-info" onclick="$_Empresa.limparPesquisa()">Limpar Formulario</a>
+    <a style="float: right;" class="btn btn-primary" onclick="$_Empresa.IniciarFormCadastro(0)">Novo cadastro</a>
+</div>

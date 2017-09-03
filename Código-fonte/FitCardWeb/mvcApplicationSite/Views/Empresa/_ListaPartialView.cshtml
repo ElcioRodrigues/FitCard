@@ -1,0 +1,66 @@
+﻿@model IPagedList<Modelo.EmpresaModelo>
+
+<h3>Lista de Empresas</h3>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-responsive">
+            <table id="tblEmpresas" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Razão Social</th>
+                        <th>Nome Fantasia</th>
+                        <th>Cnpj</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th style="width: 140px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model != null && Model.Any())
+                        {
+                            var lista = Model.ToList();
+                            foreach (var item in lista)
+                            {
+                                var index = lista.IndexOf(item);
+                                <tr data-id="@item.Id">
+                                    <td>@item.Id</td>
+                                    <td>@item.RazaoSocial</td>
+                                    <td>@item.NomeFantasia</td>
+                                    <td>@item.Cnpj</td>
+                                    <td>@item.Categoria.ToString()</td>
+                                    <td>@item.Status.ToString()</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="$_Empresa.IniciarFormCadastro(@item.Id)">Alterar</button>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="$_Empresa.excluir(this)">Excluir</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+            <div>
+                @if (Model != null && Model.Any())
+                {
+                    <div class="col-sm-6">
+                        <div class="info">
+                            Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount de @Model.TotalItemCount registro@(Model.TotalItemCount > 1 ? "s" : "")
+                        </div>
+                    </div>
+                        <div class="col-sm-6">
+                            @Html.PagedListPager(Model, Pagina => Url.Action("BuscarPaginado", new { Pagina }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(PagedListRenderOptions.Classic, new AjaxOptions()
+                       {
+                           HttpMethod = "post",
+                           OnBegin = "$_Util.modalAguarde();",
+                           OnSuccess = "$_Empresa.sucessoPaginacao(data)",
+                           OnComplete = "$_Util.removerModalAguarde()"
+                       }))
+                        </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>

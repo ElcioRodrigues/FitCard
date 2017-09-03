@@ -1,0 +1,65 @@
+﻿@model Modelo.EmpresaModelo
+
+@using (Ajax.BeginForm("Salvar", "Empresa", null, new AjaxOptions
+{
+    HttpMethod = "Post",
+    OnFailure = "$_Util.removerModalAguarde()",
+    OnSuccess = "$_Empresa.sucessoCadastro(data)",
+    OnBegin = "$_Util.modalAguarde()"
+}, new { id = "frmCadastro" }))
+{
+    @Html.HiddenFor(m => m.Id)
+    <div class="row">
+        <div class="col-md-3">
+            @Html.Label("lblRazaoSocial", "Razão Social", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.RazaoSocial, new { @class = "form-control obg" })
+        </div>
+        <div class="col-md-3">
+            @Html.Label("lblNomeFantasia", "Nome Fantasia", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.NomeFantasia, new { @class = "form-control" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblCnpj", "Cnpj", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Cnpj, new { @class = "form-control obg" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblCategoria", "Categoria", new { @class = "form-control-label" })
+            @Html.EnumDropDownListFor(m => m.Categoria, "Selecione", new { @class = "form-control obg", @onchange = "$_Empresa.changeCategoria(this)" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblStatus", "Status", new { @class = "form-control-label" })
+            @Html.EnumDropDownListFor(m => m.Status, "Selecione", new { @class = "form-control obg" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            @Html.Label("lblDataCadastro", "Data Cadastro", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.DataCadastro, new { @class = "form-control obg", @onblur = "$_Util.validaData(this)" })
+        </div>
+        <div class="col-md-2">
+            @Html.Label("lblTelefone", "Telefone", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Telefone, new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            @Html.Label("lblEmail", "E-mail", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            @Html.Label("lblEndereco", "Endereço", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            @Html.Label("lblCidade", "Cidade", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control" })
+        </div>
+        <div class="col-md-4">
+            @Html.Label("lblEstado", "Estado", new { @class = "form-control-label" })
+            @Html.TextBoxFor(m => m.Estado, new { @class = "form-control" })
+        </div>
+    </div>
+    <button type="button" style="float: right; margin-left: 5px;" class="btn btn-success" onclick="$_Empresa.salvarCadastro()" id="btnSalvar">Salvar</button>
+    <button type="button" style="float: right; margin-left: 5px;" class="btn btn-info" onclick="$_Empresa.limparCadastro()">Limpar Formulario</button>
+    <button type="button" style="float: right;" class="btn btn-primary" onclick="$_Empresa.cancelarCadastro()">Voltar</button>
+}
